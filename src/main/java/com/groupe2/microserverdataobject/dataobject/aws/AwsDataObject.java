@@ -22,6 +22,9 @@ public class AwsDataObject implements IDataObject {
     private String bucketName;
 
     public AwsDataObject(String path) {
+        if(!path.contains("/")){
+            throw new DataObjectNotFoundException();
+        }
         this.bucketName = path.substring(0, path.indexOf("/"));
         this.path = path.substring(path.indexOf("/") + 1);
     }
@@ -65,10 +68,11 @@ public class AwsDataObject implements IDataObject {
     /**
      * Downloads the current object into a byte array
      * @return byte array
+     * @throws DataObjectNotFoundException if the file does not exist
      */
     public byte[] download() throws IOException {
         if (!AwsBucketHelper.bucketExists(bucketName) || !exists()) {
-            throw new RuntimeException("File does not exist");
+            throw new DataObjectNotFoundException();
         }
 
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
