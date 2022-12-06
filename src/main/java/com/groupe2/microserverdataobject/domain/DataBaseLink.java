@@ -1,9 +1,10 @@
 package com.groupe2.microserverdataobject.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DataBaseLink {
     private String url;
-    public DataBaseLink(String url){
-        this.url = url;
+    public DataBaseLink() {
     }
 
     public String getUrl() {

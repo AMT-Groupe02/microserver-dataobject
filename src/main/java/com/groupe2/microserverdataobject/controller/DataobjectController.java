@@ -1,9 +1,14 @@
 package com.groupe2.microserverdataobject.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.groupe2.microserverdataobject.domain.DataBaseLink;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/v1")
 public class DataobjectController {
+
+        @PostMapping("/helloworld")
+        public DataBaseLink getDataobject(@RequestBody DataBaseLink url) {
+            return url;
+        }
 }
