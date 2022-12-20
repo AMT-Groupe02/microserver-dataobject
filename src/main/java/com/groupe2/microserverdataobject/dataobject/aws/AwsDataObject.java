@@ -18,8 +18,8 @@ import java.time.Duration;
 
 public class AwsDataObject implements IDataObject {
     private static final AwsCloudClient AWS_CLIENT = AwsCloudClient.getInstance();
-    private String path;
-    private String bucketName;
+    private final String path;
+    private final String bucketName;
 
     public AwsDataObject(String path) {
         if(!path.contains("/")){
@@ -31,7 +31,7 @@ public class AwsDataObject implements IDataObject {
 
     /**
      * Upload data to a bucket from base64 encoded string
-     * @param dataBase64
+     * @param dataBase64 the data to upload as base64 String
      */
     public void upload(String dataBase64) {
         byte[] bytes = java.util.Base64.getDecoder().decode(dataBase64);
@@ -40,7 +40,7 @@ public class AwsDataObject implements IDataObject {
 
     /**
      * Upload data to a bucket from byte array
-     * @param dataBytes
+     * @param dataBytes the data to upload as bytes
      */
     public void upload(byte[] dataBytes) {
         if (!AwsBucketHelper.bucketExists(bucketName)) {
@@ -104,8 +104,8 @@ public class AwsDataObject implements IDataObject {
     }
 
     /**
-     * Creates a presigned URL for the file that lasts for 60 minutes
-     * @return
+     * Creates a URL for the file that lasts for 60 minutes.
+     * @return the URL as a String.
      */
     public String getUrl() {
         final int EXPIRATION_TIME = 60;
@@ -145,10 +145,8 @@ public class AwsDataObject implements IDataObject {
 
         } catch (NoSuchKeyException e) {
             return false;
-        } catch (Exception e) {
-            throw e;
-            // TODO créer une exception custom pour chaque type d'erreur
         }
+        // TODO créer une exception custom pour chaque type d'erreur qui peut survenir.
         return true;
     }
 }
