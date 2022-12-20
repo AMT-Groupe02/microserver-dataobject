@@ -19,16 +19,14 @@ public class DataobjectControllerV1 {
             return new DataBaseLink(awsDataObject.getUrl());
         }
 
-        @DeleteMapping("/object/{path}")
-        public void deleteDataobject(@PathVariable(value="path") String path) {
-            path = path.replace("@", "/");
+        @DeleteMapping("/object")
+        public void deleteDataobject(@RequestParam String path) {
             AwsDataObject awsDataObject = new AwsDataObject(path);
             awsDataObject.delete();
         }
 
-        @GetMapping("/object/{path}")
-        public DataBaseLink getDataobject(@PathVariable(value="path") String path) {
-            path = path.replace("@", "/");
+        @GetMapping("/object")
+        public DataBaseLink getDataobject(@RequestParam String path) {
             AwsDataObject awsDataObject = new AwsDataObject(path);
             return new DataBaseLink(awsDataObject.getUrl());
         }
