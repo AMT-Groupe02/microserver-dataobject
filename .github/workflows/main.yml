@@ -1,9 +1,9 @@
-name: ci
+name: deploy
 
 on:
   push:
     branches:
-      - "master"
+      - "develop"
 
 jobs:
   build:
@@ -28,4 +28,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          target: production
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dataobject-microservice:latest
