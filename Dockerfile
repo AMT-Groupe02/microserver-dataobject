@@ -3,9 +3,16 @@
 FROM eclipse-temurin:17-jdk-jammy as base
 WORKDIR /app
 COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+COPY mvnw mvnw
+COPY ./pom.xml ./pom.xml
 RUN ./mvnw dependency:resolve
 COPY src ./src
+ARG ACCESS_KEY_ARG=notset
+ARG SECRET_KEY_ARG=notset
+ENV ACCESS_KEY=$ACCESS_KEY_ARG
+ENV SECRET_KEY=$SECRET_KEY_ARG
+COPY ./env-script.sh ./
+RUN ./env-script.sh
 
 FROM base as test
 CMD ["./mvnw", "test"]
@@ -19,5 +26,6 @@ RUN ./mvnw package
 
 FROM eclipse-temurin:17-jre-jammy as production
 EXPOSE 8080
-COPY --from=build /app/target/spring-petclinic-*.jar /spring-petclinic.jar
-CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/spring-petclinic.jar"]
+COPY --from=build /app/target/microservice-dataobject-*.jar /microservice-dataobject.jar
+COPY --from=build /app/.env /.env
+CMD ["java", "-jar", "/microservice-dataobject.jar"]

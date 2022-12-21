@@ -1,4 +1,4 @@
-package com.groupe2.microserverdataobject.dataobject;
+package com.groupe2.microservicedataobject.dataobject;
 
 public class DataObjectNotFoundException extends RuntimeException {
     public DataObjectNotFoundException() {

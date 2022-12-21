@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.groupe2</groupId>
-    <artifactId>microserver-dataobject</artifactId>
+    <artifactId>microservice-dataobject</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>microserver-dataobject</name>
-    <description>microserver-dataobject</description>
+    <name>microservice-dataobject</name>
+    <description>microservice-dataobject</description>
     <properties>
         <java.version>17</java.version>
     </properties>

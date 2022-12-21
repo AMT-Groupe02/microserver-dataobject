@@ -1,9 +1,9 @@
-package com.groupe2.microserverdataobject.controller;
+package com.groupe2.microservicedataobject.controller;
 
-import com.groupe2.microserverdataobject.dataobject.DataObjectNotFoundException;
-import com.groupe2.microserverdataobject.dataobject.aws.AwsDataObject;
-import com.groupe2.microserverdataobject.domain.requestbody.Base64Data;
-import com.groupe2.microserverdataobject.domain.responsebody.DataBaseLink;
+import com.groupe2.microservicedataobject.dataobject.DataObjectNotFoundException;
+import com.groupe2.microservicedataobject.dataobject.aws.AwsDataObject;
+import com.groupe2.microservicedataobject.domain.requestbody.Base64Data;
+import com.groupe2.microservicedataobject.domain.responsebody.DataBaseLink;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

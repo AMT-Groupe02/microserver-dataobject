@@ -1,4 +1,4 @@
-package com.groupe2.microserverdataobject;
+package com.groupe2.microservicedataobject;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

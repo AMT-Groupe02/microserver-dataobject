@@ -1,4 +1,4 @@
-package com.groupe2.microserverdataobject;
+package com.groupe2.microservicedataobject;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
