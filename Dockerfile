@@ -12,10 +12,11 @@ ARG SECRET_KEY_ARG=notset
 ENV ACCESS_KEY=$ACCESS_KEY_ARG
 ENV SECRET_KEY=$SECRET_KEY_ARG
 COPY ./env-script.sh ./
+RUN chmod +x ./env-script.sh
 RUN ./env-script.sh
 
 FROM base as test
-CMD ["./mvnw", "test"]
+RUN ./mvnw test
 
 FROM base as development
 CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=mysql", "-Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000'"]
