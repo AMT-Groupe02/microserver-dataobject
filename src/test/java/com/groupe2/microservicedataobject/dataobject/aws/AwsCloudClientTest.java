@@ -1,4 +1,4 @@
-package com.groupe2.microserverdataobject.dataobject.aws;
+package com.groupe2.microservicedataobject.dataobject.aws;
 
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.regions.Region;

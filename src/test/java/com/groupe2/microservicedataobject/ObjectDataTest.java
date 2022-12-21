@@ -1,8 +1,8 @@
-package com.groupe2.microserverdataobject;
+package com.groupe2.microservicedataobject;
 
-import com.groupe2.microserverdataobject.dataobject.DataObjectNotFoundException;
-import com.groupe2.microserverdataobject.dataobject.IDataObject;
-import com.groupe2.microserverdataobject.dataobject.aws.AwsDataObject;
+import com.groupe2.microservicedataobject.dataobject.DataObjectNotFoundException;
+import com.groupe2.microservicedataobject.dataobject.IDataObject;
+import com.groupe2.microservicedataobject.dataobject.aws.AwsDataObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

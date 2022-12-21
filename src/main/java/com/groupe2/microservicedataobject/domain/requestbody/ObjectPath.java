@@ -1,4 +1,4 @@
-package com.groupe2.microserverdataobject.domain.requestbody;
+package com.groupe2.microservicedataobject.domain.requestbody;
 
 public class ObjectPath {
     private String path;

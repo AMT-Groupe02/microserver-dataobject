@@ -1,4 +1,4 @@
-package com.groupe2.microserverdataobject.dataobject.aws;
+package com.groupe2.microservicedataobject.dataobject.aws;
 
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.services.s3.S3Client;

@@ -1,6 +1,4 @@
-package com.groupe2.microserverdataobject.domain.responsebody;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package com.groupe2.microservicedataobject.domain.responsebody;
 
 public class DataBaseLink {
     private String url;
