@@ -34,7 +34,7 @@ public final class AwsBucketHelper {
         }
     }
 
-    public static void deleteBucket(String bucketName) {
+    public static void deleteBucket(String bucketName, boolean recursive) {
         try (S3Client s3 = S3Client.builder().credentialsProvider(awsClient.getCredentialsProvider()).region(awsClient.getRegion()).build()) {
 
             S3Waiter waiter = s3.waiter();
@@ -44,16 +44,18 @@ public final class AwsBucketHelper {
                     .build();
             ListObjectsV2Response listObjectsV2Response;
 
-            do {
-                listObjectsV2Response = s3.listObjectsV2(listObjectsV2Request);
-                for (S3Object s3Object : listObjectsV2Response.contents()) {
-                    DeleteObjectRequest request = DeleteObjectRequest.builder()
-                            .bucket(bucketName)
-                            .key(s3Object.key())
-                            .build();
-                    s3.deleteObject(request);
-                }
-            } while (Boolean.TRUE.equals(listObjectsV2Response.isTruncated()));
+            if (recursive){
+                do {
+                    listObjectsV2Response = s3.listObjectsV2(listObjectsV2Request);
+                    for (S3Object s3Object : listObjectsV2Response.contents()) {
+                        DeleteObjectRequest request = DeleteObjectRequest.builder()
+                                .bucket(bucketName)
+                                .key(s3Object.key())
+                                .build();
+                        s3.deleteObject(request);
+                    }
+                } while (Boolean.TRUE.equals(listObjectsV2Response.isTruncated()));
+            }
 
             DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder()
                     .bucket(bucketName)
@@ -66,8 +68,6 @@ public final class AwsBucketHelper {
 
             WaiterResponse<HeadBucketResponse> waiterResponse = waiter.waitUntilBucketNotExists(bucketRequestWait);
             waiterResponse.matched().response().ifPresent(System.out::println);
-            System.out.println(bucketName + " is deleted");
-
         }
     }
 
