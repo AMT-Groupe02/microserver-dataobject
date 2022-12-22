@@ -8,9 +8,9 @@ import software.amazon.awssdk.regions.Region;
 
 public final class AwsCloudClient {
     private static AwsCloudClient instance = null;
-    private AwsCredentialsProvider credentialsProvider;
+    private final AwsCredentialsProvider credentialsProvider;
 
-    private Region region;
+    private final Region region;
 
     private AwsCloudClient() {
         Dotenv dotenv = Dotenv.load();
