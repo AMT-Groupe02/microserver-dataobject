@@ -1,5 +1,6 @@
 package com.groupe2.microservicedataobject.dataobject.aws;
 
+import com.groupe2.microservicedataobject.dataobject.PathContainsOtherObjectsException;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -26,11 +27,7 @@ public final class AwsBucketHelper {
                     .build();
 
             WaiterResponse<HeadBucketResponse> waiterResponse = waiter.waitUntilBucketExists(bucketRequestWait);
-            waiterResponse.matched().response().ifPresent(System.out::println);
-            System.out.println(bucketName + " is ready");
 
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -60,14 +57,19 @@ public final class AwsBucketHelper {
             DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder()
                     .bucket(bucketName)
                     .build();
+
             s3.deleteBucket(deleteBucketRequest);
+            System.out.println("coucoucoucocuocucoucoucocucoucoucoucocuocu !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+
 
             HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder()
                     .bucket(bucketName)
                     .build();
 
             WaiterResponse<HeadBucketResponse> waiterResponse = waiter.waitUntilBucketNotExists(bucketRequestWait);
-            waiterResponse.matched().response().ifPresent(System.out::println);
+        }catch (S3Exception e){
+            throw new PathContainsOtherObjectsException();
         }
     }
 

@@ -30,7 +30,7 @@ public class AwsDataObject implements IDataObject {
         if(path.contains("/")){
             int index = path.indexOf("/");
             this.bucketName = path.substring(0, index);
-            if(index + 1 >= path.length()){
+            if(index + 1 < path.length()){
                 this.path = path.substring(index + 1);
             }else {
                 this.path = "";
@@ -193,9 +193,14 @@ public class AwsDataObject implements IDataObject {
      * @return true if the object exists, false otherwise
      */
     public boolean exists() {
+        if (!AwsBucketHelper.bucketExists(bucketName)){
+            return false;
+        }
+
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
-            if (!AwsBucketHelper.bucketExists(bucketName)){
-                return false;
+
+            if (path.length() == 0){
+                return true;
             }
 
             ListObjectsRequest listObjects = ListObjectsRequest
@@ -205,7 +210,7 @@ public class AwsDataObject implements IDataObject {
                     .build();
 
             ListObjectsResponse res = s3.listObjects(listObjects);
-            return res.contents().size() != 0;
+            return !res.contents().isEmpty();
 
         } catch (NoSuchKeyException e) {
             return false;
