@@ -16,7 +16,7 @@ class AwsCloudClientTest {
     }
 
     @Test
-    void regionIsEUWEST1(){
+    void regionIsEUWEST2(){
         AwsCloudClient client = AwsCloudClient.getInstance();
         assertEquals(Region.EU_WEST_2, client.getRegion());
     }
