@@ -1,27 +1,14 @@
 package com.groupe2.microservicedataobject.dataobject.aws;
 
-import com.groupe2.microservicedataobject.dataobject.ICloudClient;
 import io.github.cdimascio.dotenv.Dotenv;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.rekognition.RekognitionClient;
 
-public final class AwsCloudClient implements ICloudClient {
+public final class AwsCloudClient {
     private static AwsCloudClient instance = null;
     private AwsCredentialsProvider credentialsProvider;
-    private RekognitionClient rekognitionClient = new RekognitionClient() {
-        @Override
-        public String serviceName() {
-            return null;
-        }
-
-        @Override
-        public void close() {
-
-        }
-    };
 
     private Region region;
 
@@ -46,7 +33,4 @@ public final class AwsCloudClient implements ICloudClient {
         return region;
     }
 
-    RekognitionClient getRekognitionClient() {
-        return rekognitionClient;
-    }
 }
