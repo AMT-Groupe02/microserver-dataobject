@@ -20,14 +20,14 @@ class AwsBucketHelperTest {
     @BeforeEach
     void setUp() {
         if (AwsBucketHelper.bucketExists(BUCKET_NAME)) {
-            AwsBucketHelper.deleteBucket(BUCKET_NAME);
+            AwsBucketHelper.deleteBucket(BUCKET_NAME, true);
         }
     }
 
     @AfterEach
     void tearDown() {
         if (AwsBucketHelper.bucketExists(BUCKET_NAME)) {
-            AwsBucketHelper.deleteBucket(BUCKET_NAME);
+            AwsBucketHelper.deleteBucket(BUCKET_NAME, true);
         }
     }
 
@@ -40,7 +40,7 @@ class AwsBucketHelperTest {
     @Test
     void deleteBucket() {
         AwsBucketHelper.createBucket(BUCKET_NAME);
-        AwsBucketHelper.deleteBucket(BUCKET_NAME);
+        AwsBucketHelper.deleteBucket(BUCKET_NAME, true);
         assertFalse(AwsBucketHelper.bucketExists(BUCKET_NAME));
     }
 

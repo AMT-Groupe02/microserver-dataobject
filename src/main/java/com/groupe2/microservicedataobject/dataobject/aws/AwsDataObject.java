@@ -27,11 +27,19 @@ public class AwsDataObject implements IDataObject {
     private final String bucketName;
 
     public AwsDataObject(String path) {
-        if(!path.contains("/")){
-            throw new DataObjectNotFoundException();
+        if(path.contains("/")){
+            int index = path.indexOf("/");
+            this.bucketName = path.substring(0, index);
+            if(index + 1 < path.length()){
+                this.path = path.substring(index + 1);
+            }else {
+                this.path = "";
+            }
+        }else{
+            this.path = "";
+            this.bucketName = path;
         }
-        this.bucketName = path.substring(0, path.indexOf("/"));
-        this.path = path.substring(path.indexOf("/") + 1);
+        
     }
 
     /**
@@ -54,6 +62,11 @@ public class AwsDataObject implements IDataObject {
 
         if (!AwsBucketHelper.bucketExists(bucketName)) {
             AwsBucketHelper.createBucket(bucketName);
+        }
+
+        if(path.length() == 0){
+            // Return because we only need to create the bucket when the path is empty
+            return;
         }
 
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
@@ -105,6 +118,13 @@ public class AwsDataObject implements IDataObject {
         if (!AwsBucketHelper.bucketExists(bucketName) || !exists()) {
             throw new DataObjectNotFoundException();
         }
+
+        if(path.length() == 0){
+            AwsBucketHelper.deleteBucket(bucketName, recursive);
+            // Return because we only need to delete the bucket when the path is empty
+            return;
+        }
+
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
             if (!recursive) {
                 ListObjectsRequest listObjects = ListObjectsRequest
@@ -173,9 +193,14 @@ public class AwsDataObject implements IDataObject {
      * @return true if the object exists, false otherwise
      */
     public boolean exists() {
+        if (!AwsBucketHelper.bucketExists(bucketName)){
+            return false;
+        }
+
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
-            if (!AwsBucketHelper.bucketExists(bucketName)){
-                return false;
+
+            if (path.length() == 0){
+                return true;
             }
 
             ListObjectsRequest listObjects = ListObjectsRequest
@@ -185,7 +210,7 @@ public class AwsDataObject implements IDataObject {
                     .build();
 
             ListObjectsResponse res = s3.listObjects(listObjects);
-            return res.contents().size() != 0;
+            return !res.contents().isEmpty();
 
         } catch (NoSuchKeyException e) {
             return false;
