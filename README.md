@@ -85,3 +85,60 @@ L'image construite ne contient pas le fichier .env, il est donc important de ne 
         └── dataobject --> Test sur la gestion des fichiers.
           └── aws --> Test plus spécifique à aws
 ```
+
+## API Endpoints
+
+## End-point: Get file
+### Method: GET
+>```
+>http://localhost:8080/v1/object?path=path/to/file.extension
+>```
+### Query Params
+
+|Param|value|
+|---|---|
+|path|path/to/file.extension|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+## End-point: Delete file
+### Method: DELETE
+>```
+>http://localhost:8080/v1/object?path=path/to/file.extension
+>```
+### Body (**raw**)
+
+```json
+{
+  "id":10
+}
+```
+
+### Query Params
+
+|Param|value|
+|---|---|
+|path|path/to/file.extension|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+## End-point: Post file as base64
+### Method: POST
+>```
+>http://localhost:8080/v1/object
+>```
+### Body (**raw**)
+
+```json
+{
+   "path": "path/to/file.extension",
+   "data": "MY BASE64 DATA"
+}
+```
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
