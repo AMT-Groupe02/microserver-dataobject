@@ -108,13 +108,6 @@ L'image construite ne contient pas le fichier .env, il est donc important de ne 
 >```
 >http://localhost:8080/v1/object?path=path/to/file.extension
 >```
-### Body (**raw**)
-
-```json
-{
-  "id":10
-}
-```
 
 ### Query Params
 
