@@ -1,11 +1,14 @@
-package com.groupe2.microserverdataobject.dataobject.aws;
+package com.groupe2.microservicedataobject.dataobject.aws;
 
-import com.groupe2.microserverdataobject.dataobject.DataObjectNotFoundException;
-import com.groupe2.microserverdataobject.dataobject.IDataObject;
+import com.groupe2.microservicedataobject.dataobject.DataObjectAlreadyExists;
+import com.groupe2.microservicedataobject.dataobject.DataObjectNotFoundException;
+import com.groupe2.microservicedataobject.dataobject.IDataObject;
+import com.groupe2.microservicedataobject.dataobject.PathContainsOtherObjectsException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
@@ -15,20 +18,33 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AwsDataObject implements IDataObject {
     private static final AwsCloudClient AWS_CLIENT = AwsCloudClient.getInstance();
-    private String path;
-    private String bucketName;
+    private final String path;
+    private final String bucketName;
 
     public AwsDataObject(String path) {
-        this.bucketName = path.substring(0, path.indexOf("/"));
-        this.path = path.substring(path.indexOf("/") + 1);
+        if(path.contains("/")){
+            int index = path.indexOf("/");
+            this.bucketName = path.substring(0, index);
+            if(index + 1 < path.length()){
+                this.path = path.substring(index + 1);
+            }else {
+                this.path = "";
+            }
+        }else{
+            this.path = "";
+            this.bucketName = path;
+        }
+        
     }
 
     /**
      * Upload data to a bucket from base64 encoded string
-     * @param dataBase64
+     * @param dataBase64 the data to upload as base64 String
      */
     public void upload(String dataBase64) {
         byte[] bytes = java.util.Base64.getDecoder().decode(dataBase64);
@@ -37,11 +53,20 @@ public class AwsDataObject implements IDataObject {
 
     /**
      * Upload data to a bucket from byte array
-     * @param dataBytes
+     * @param dataBytes the data to upload as bytes
      */
     public void upload(byte[] dataBytes) {
+        if (exists()){
+            throw new DataObjectAlreadyExists();
+        }
+
         if (!AwsBucketHelper.bucketExists(bucketName)) {
             AwsBucketHelper.createBucket(bucketName);
+        }
+
+        if(path.length() == 0){
+            // Return because we only need to create the bucket when the path is empty
+            return;
         }
 
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
@@ -65,10 +90,11 @@ public class AwsDataObject implements IDataObject {
     /**
      * Downloads the current object into a byte array
      * @return byte array
+     * @throws DataObjectNotFoundException if the file does not exist
      */
     public byte[] download() throws IOException {
         if (!AwsBucketHelper.bucketExists(bucketName) || !exists()) {
-            throw new RuntimeException("File does not exist");
+            throw new DataObjectNotFoundException();
         }
 
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
@@ -80,28 +106,61 @@ public class AwsDataObject implements IDataObject {
         }
     }
 
+    public void delete(){
+        delete(false);
+    }
+
     /**
      * Deletes the current object
      * @throws DataObjectNotFoundException if the file does not exist
      */
-    public void delete() {
+    public void delete(boolean recursive) {
         if (!AwsBucketHelper.bucketExists(bucketName) || !exists()) {
             throw new DataObjectNotFoundException();
         }
-        try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
-            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(path)
-                    .build();
 
-            s3.deleteObject(deleteObjectRequest);
+        if(path.length() == 0){
+            AwsBucketHelper.deleteBucket(bucketName, recursive);
+            // Return because we only need to delete the bucket when the path is empty
+            return;
+        }
+
+        try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
+            if (!recursive) {
+                ListObjectsRequest listObjects = ListObjectsRequest
+                        .builder()
+                        .bucket(bucketName)
+                        .prefix(path)
+                        .build();
+
+                ListObjectsResponse res = s3.listObjects(listObjects);
+                if (res.contents().size() > 1){
+                    throw new PathContainsOtherObjectsException();
+                }
+
+                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(path)
+                        .build();
+                s3.deleteObject(deleteObjectRequest);
+                return;
+            }
+
+            ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).prefix(path).build();
+            ListObjectsV2Iterable list = s3.listObjectsV2Paginator(request);
+            for (ListObjectsV2Response response : list) {
+                List<S3Object> objects = response.contents();
+                List<ObjectIdentifier> objectIdentifiers = objects.stream().map(o -> ObjectIdentifier.builder().key(o.key()).build()).collect(Collectors.toList());
+                DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder().bucket(bucketName).delete(Delete.builder().objects(objectIdentifiers).build()).build();
+                s3.deleteObjects(deleteObjectsRequest);
+            }
         }
 
     }
 
     /**
-     * Creates a presigned URL for the file that lasts for 60 minutes
-     * @return
+     * Creates a URL for the file that lasts for 60 minutes.
+     * @return the URL as a String.
      */
     public String getUrl() {
         final int EXPIRATION_TIME = 60;
@@ -134,17 +193,29 @@ public class AwsDataObject implements IDataObject {
      * @return true if the object exists, false otherwise
      */
     public boolean exists() {
+        if (!AwsBucketHelper.bucketExists(bucketName)){
+            return false;
+        }
+
         try (S3Client s3 = S3Client.builder().credentialsProvider(AWS_CLIENT.getCredentialsProvider()).region(AWS_CLIENT.getRegion()).build()) {
 
-            GetObjectRequest request = GetObjectRequest.builder().bucket(bucketName).key(path).build();
-            s3.getObject(request);
+            if (path.length() == 0){
+                return true;
+            }
+
+            ListObjectsRequest listObjects = ListObjectsRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .prefix(path)
+                    .build();
+
+            ListObjectsResponse res = s3.listObjects(listObjects);
+            return !res.contents().isEmpty();
 
         } catch (NoSuchKeyException e) {
             return false;
-        } catch (Exception e) {
-            throw e;
-            // TODO créer une exception custom pour chaque type d'erreur
         }
-        return true;
+        // TODO créer une exception custom pour chaque type d'erreur qui peut survenir.
+        //return true;
     }
 }
