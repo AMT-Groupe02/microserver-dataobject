@@ -1,16 +1,16 @@
-# Dataobject microservice
+# 🐜 Dataobject microservice 
 Ce micro-service met à disposition des routes http permettant de stocker des fichiers sur le cloud.
 
 Les étapes ci-dessous sont à faire depuis le dossier racine du projet.
 
-## Collaborateurs
+## 👫 Collaborateurs 
 Développeurs : Luca Coduri & Chloé Fontaine
 
 Professeur : Nicolas Glassey
 
 Assistant : Adrien Allemand
 
-## Prérequis
+## 🚧 Prérequis 
 Vous devez avoir au minimum Java 17 et Maven installés sur votre machine ou alors docker, car ce projet utilise Spring.
 Il est aussi nécessaire de créer un fichier .env à la racine. Vous retrouverez un exemple de son contenu dans le fichier .env.example
 
@@ -18,7 +18,7 @@ Nous utilisons AWS dans la version actuelle, il faut donc fournir vos identifian
 
 ## Récupérer les dépendances
 ```
-mvn dependency:resolve
+./mvnw dependency:resolve
 ```
 
 ## Compilation
@@ -38,7 +38,36 @@ Pour lancer les tests, il faut faire la commande suivante :
 ./mvnw test
 ```
 
-## Structure du projet
+## 🐳 Docker
+
+### Tests
+```bash
+docker build --build-arg ACCESS_KEY_ARG=YOUR_KEY --build-arg SECRET_KEY_ARG=YOUR_KEY -t dataobject-test:latest --target test .
+```
+Les tests sont lancés durant l'étape de build, ce qui signifie que le build échoue si les tests échouent.
+
+`⚠ L'image résultante contient le fichier .env avec vos credentials, ne partagez donc pas cette image avec n'importe qui.`
+
+### development
+```bash
+docker build -t dataobject-development:latest --target development .
+docker run -p 8080:8080 dataobject-development:latest
+```
+
+Lors du build de cette image le fichier .env se trouvant à la racine du projet est copié,
+veillez donc à ce qu'il soit existant et complet.
+
+`⚠ L'image résultante contient le fichier .env avec vos credentials, ne partagez donc pas cette image avec n'importe qui.`
+
+### Production
+```bash
+docker build -t dataobject-production:latest --target production .
+docker run -p 8080:8080 dataobject-production:latest
+```
+
+L'image construite ne contient pas le fichier .env, il est donc important de ne pas oublier de le rajouter à la racine de l'image.
+
+## 🏚 Structure du projet
 ```
 ./src/
 ├── main
@@ -56,7 +85,3 @@ Pour lancer les tests, il faut faire la commande suivante :
         └── dataobject --> Test sur la gestion des fichiers.
           └── aws --> Test plus spécifique à aws
 ```
-
-## Sur le VPS AWS
-Le projet a déjà été pull sur le VPS AWS.
-Rendez-vous dans `~/dataobject` et lancez les commandes détaillées au-dessus.
