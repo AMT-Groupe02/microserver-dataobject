@@ -59,7 +59,7 @@ public final class AwsBucketHelper {
                     .build();
 
             s3.deleteBucket(deleteBucketRequest);
-            System.out.println("coucoucoucocuocucoucoucocucoucoucoucocuocu !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            // :)
 
 
 

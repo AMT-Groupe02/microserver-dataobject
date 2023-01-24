@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+// TODO cette classe n'a rien a faire dans ce microservice. ici on s'occupe UNIQUEMENT du data-object normalement.
 public class AwsLabelDetectorHelper implements ILabelDetector {
     private static final AwsCloudClient awsClient = AwsCloudClient.getInstance();
 
